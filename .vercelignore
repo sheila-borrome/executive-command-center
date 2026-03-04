@@ -1,0 +1,8 @@
+# Exclude route modules from Vercel function detection
+  # These are Express Router modules imported by api/index.js, not standalone serverless functions
+  api/routes/
+  api/server.js
+  api/supabase.js
+  api/vercel.js
+  api/middleware/
+  
