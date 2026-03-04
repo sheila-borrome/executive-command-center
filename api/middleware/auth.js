@@ -1,4 +1,4 @@
-import { getSupabaseAdmin } from "../supabase.js";
+import { getSupabaseAdmin, getSupabase } from "../supabase.js";
 
 export async function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;

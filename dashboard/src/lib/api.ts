@@ -1,8 +1,9 @@
+import { supabase } from "./supabase";
+
 const API_BASE = import.meta.env.VITE_API_BASE ?? "/api";
 
 async function getToken(): Promise<string | null> {
   try {
-    const { supabase } = await import("./supabase");
     const { data } = await supabase.auth.getSession();
     return data?.session?.access_token ?? null;
   } catch {

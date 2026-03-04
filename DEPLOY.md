@@ -31,8 +31,8 @@
 4. Go to **APIs & Services → Credentials → Create Credentials → OAuth 2.0 Client ID**.
 5. Application type: **Web application**.
 6. Add **Authorized redirect URIs**:
-   - Local: `http://localhost:5174/api/auth/google/callback` (or your frontend port if different)
-   - Production: `https://<your-vercel-domain>/api/auth/google/callback`
+   - Local: `http://localhost:4000/api/auth/google/callback` (API port; frontend proxies /api to it)
+   - Production: `https://<your-vercel-domain>/api/auth/google/callback` (add after first deploy)
 7. Copy **Client ID** and **Client Secret**.
 
 ---
@@ -89,48 +89,23 @@
 
 ## 5. Vercel
 
-### Option A: Monorepo (frontend + API in one project)
+### Option A: Monorepo (recommended; uses root `vercel.json`)
 
-1. Push the repo to GitHub and import the project in Vercel.
-2. **Root Directory**: leave empty or set to repo root.
-3. **Build and Output**:
-   - Build command: `cd dashboard && npm install && npm run build`
-   - Output directory: `dashboard/dist`
-   - Install command: `cd dashboard && npm install`
-4. **Environment variables** (Vercel → Settings → Environment Variables):
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY`
-   - `VITE_API_BASE` = `/api`
-5. Add a **serverless function** for the API:
-   - Create `api/index.js` (or use existing `api/vercel.js`) that exports the Express app.
-   - In Vercel, add a function that runs `api/vercel.js` (or the path you use) and set **Rewrites** so `/api/*` is handled by that function.
-6. In the same Vercel project, add **server-side** env vars for the API (so the serverless function can read them):
-   - `SUPABASE_URL`
-   - `SUPABASE_ANON_KEY`
-   - `SUPABASE_SERVICE_ROLE_KEY`
-   - Optionally `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
+1. Push the repo to GitHub and import the project in Vercel (root = repo root).
+2. The repo’s **vercel.json** already sets:
+   - Build: `cd dashboard && npm ci && npm run build`
+   - Output: `dashboard/dist`
+   - Rewrites: `/api/(.*)` → serverless `api/index.js`, all other routes → `index.html` (SPA)
+   - Function: `api/index.js` with `@vercel/node@3`
+3. **Environment variables** (Vercel → Settings → Environment Variables):
+   - For **build** (dashboard): `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_API_BASE` = `/api` (same-origin rewrites).
+   - For **serverless API**: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`; optionally `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`.
+4. Deploy. After first deploy, add the production callback URL in Google Cloud (see §2) if using Calendar.
 
 ### Option B: Two Vercel projects
 
 - **Project 1 (frontend)**: Root = `dashboard`, build = `npm run build`, output = `dist`. Env: `VITE_*` and `VITE_API_BASE` = full URL of the API (e.g. `https://ecc-api.vercel.app`).
-- **Project 2 (API)**: Root = `api`, build = none (or a simple `npm install`), add a serverless function that runs the Express app. Env: `SUPABASE_*`, `GOOGLE_*`.
-
-### Rewrites (single project)
-
-In the project root, add `vercel.json`:
-
-```json
-{
-  "buildCommand": "cd dashboard && npm install && npm run build",
-  "outputDirectory": "dashboard/dist",
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/route" },
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
-}
-```
-
-The exact `destination` for the API depends on how you define the serverless function (e.g. `api/route.js` or Vercel’s default function routing). Adjust so that requests to `/api/tasks` etc. hit your Express app and that the app strips the `/api` prefix (already done in `api/server.js`).
+- **Project 2 (API)**: Root = `api`, serverless entry = `api/index.js`. Env: `SUPABASE_*`, `GOOGLE_*`.
 
 ---
 
@@ -152,3 +127,14 @@ The exact `destination` for the API depends on how you define the serverless fun
 | Supabase service_role | Supabase → Settings → API     | `SUPABASE_SERVICE_ROLE_KEY` (API only)   |
 | Google Client ID  | Google Cloud → Credentials        | `GOOGLE_CLIENT_ID` (API env)             |
 | Google Client Secret | Google Cloud → Credentials     | `GOOGLE_CLIENT_SECRET` (API env)         |
+
+---
+
+## Final review checklist
+
+- [ ] **Local:** `cd api && npm run dev` → API on 4000; `cd dashboard && npm run dev` → app loads, sign up works.
+- [ ] **Build:** `cd dashboard && npm run build` → `dashboard/dist` produced (can take ~2 min).
+- [ ] **Env:** `.env` and `.env.local` are in `.gitignore`; never commit service_role key. Rotate it in Supabase if it was ever committed.
+- [ ] **Git:** `git push` to GitHub; Vercel connected to repo.
+- [ ] **Vercel env:** All variables from §5 set (VITE_* for build, SUPABASE_* and optional GOOGLE_* for API).
+- [ ] **Post-deploy:** Supabase Site URL and Redirect URLs set to your Vercel URL; Google production callback added if using Calendar.

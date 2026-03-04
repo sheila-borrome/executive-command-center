@@ -45,6 +45,9 @@ app.use("/briefing", authMiddleware, briefingRouter);
 app.use("/auth", authRouter);
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`API listening on ${PORT}`));
+// Only listen when running locally (Vercel invokes the app per request)
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => console.log(`API listening on ${PORT}`));
+}
 
 export default app;
