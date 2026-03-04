@@ -13,18 +13,8 @@ import { Settings } from "./pages/Settings";
 import { Search } from "./pages/Search";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-surface-800">
-        <p className="text-gray-400">Loading…</p>
-      </div>
-    );
-  }
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-  return <>{children}</>;
+    // Auth temporarily disabled for preview
+    return <>{children}</>;
 }
 
 function AppRoutes() {
