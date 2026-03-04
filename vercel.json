@@ -1,14 +1,9 @@
 {
-  "buildCommand": "cd dashboard && npm ci && npm run build",
-  "outputDirectory": "dashboard/dist",
-  "framework": null,
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index" },
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "functions": {
-    "api/index.js": {
-      "runtime": "@vercel/node@3"
-    }
-  }
+    "buildCommand": "cd dashboard && npm ci && npm run build",
+    "outputDirectory": "dashboard/dist",
+    "framework": null,
+    "rewrites": [
+          { "source": "/api/(.*)", "destination": "/api/index" },
+          { "source": "/(.*)", "destination": "/index.html" }
+    ]
 }
