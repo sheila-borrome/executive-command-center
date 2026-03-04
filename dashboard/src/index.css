@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-surface-800 text-gray-100 antialiased;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+  }
+}
+
+/* Entity tag colors - use in components via style or class */
+.entity-ldu { --entity-color: #f59e0b; }
+.entity-ldg { --entity-color: #10b981; }
+.entity-sldg { --entity-color: #3b82f6; }
+.entity-lacounty { --entity-color: #8b5cf6; }
+.entity-bigkika { --entity-color: #ec4899; }
