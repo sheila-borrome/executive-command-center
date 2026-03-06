@@ -18,6 +18,12 @@ export function Tasks() {
   const [quickTitle, setQuickTitle] = useState("");
   const [detailId, setDetailId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editStatus, setEditStatus] = useState<Task["status"]>("not_started");
+  const [editPriority, setEditPriority] = useState<Task["priority"]>("normal");
+  const [editDueDate, setEditDueDate] = useState("");
+  const [editEntityId, setEditEntityId] = useState<string>("");
 
   const load = useCallback(async () => {
     try {
@@ -40,6 +46,18 @@ export function Tasks() {
   useEffect(() => {
     load();
   }, [load]);
+
+  const detailTask = detailId ? tasks.find((t) => t.id === detailId) : null;
+  useEffect(() => {
+    if (detailTask) {
+      setEditTitle(detailTask.title);
+      setEditDescription(detailTask.description ?? "");
+      setEditStatus(detailTask.status);
+      setEditPriority(detailTask.priority);
+      setEditDueDate(detailTask.due_date ? detailTask.due_date.slice(0, 10) : "");
+      setEditEntityId(detailTask.entity_id ?? "");
+    }
+  }, [detailTask?.id, detailTask?.title, detailTask?.description, detailTask?.status, detailTask?.priority, detailTask?.due_date, detailTask?.entity_id]);
 
   const filtered = tasks.filter((t) => {
     if (filterEntity && t.entity_id !== filterEntity) return false;
@@ -93,7 +111,29 @@ export function Tasks() {
     }
   };
 
-  const detailTask = detailId ? tasks.find((t) => t.id === detailId) : null;
+  const handleUpdateTask = async (id: string, updates: Partial<Task>) => {
+    setSaving(true);
+    try {
+      const updated = await apiPatch<Task>(`/tasks/${id}`, updates);
+      setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSaveDetail = () => {
+    if (!detailTask || saving) return;
+    handleUpdateTask(detailTask.id, {
+      title: editTitle.trim() || detailTask.title,
+      description: editDescription.trim() || null,
+      status: editStatus,
+      priority: editPriority,
+      due_date: editDueDate ? editDueDate : null,
+      entity_id: editEntityId || null,
+    });
+  };
 
   return (
     <div className="p-4 md:p-6">
@@ -191,7 +231,7 @@ export function Tasks() {
                   className="rounded"
                 />
                 <button type="button" onClick={() => setDetailId(detailId === t.id ? null : t.id)} className="min-w-0 flex-1 text-left">
-                  <span className="font-medium text-white">{t.title}</span>
+                  <span className={`font-medium ${t.status === "done" ? "text-gray-500 line-through" : "text-white"}`}>{t.title}</span>
                   <span className="ml-2 text-xs text-gray-500">{t.priority}</span>
                   {t.entity && <EntityTag name={t.entity.name} slug={t.entity.slug} color={t.entity.color} />}
                   {t.due_date && <span className="ml-2 text-xs text-gray-500">{new Date(t.due_date).toLocaleDateString()}</span>}
@@ -205,16 +245,86 @@ export function Tasks() {
             ))}
           </ul>
           {detailTask && (
-            <aside className="w-80 shrink-0 rounded-xl border border-gray-700 bg-surface-900 p-4">
-              <h4 className="font-semibold text-white">{detailTask.title}</h4>
-              {detailTask.description && <p className="mt-2 text-sm text-gray-400">{detailTask.description}</p>}
-              <dl className="mt-3 space-y-1 text-sm">
-                <div><dt className="text-gray-500">Status</dt><dd>{detailTask.status}</dd></div>
-                <div><dt className="text-gray-500">Priority</dt><dd>{detailTask.priority}</dd></div>
-                {detailTask.due_date && <div><dt className="text-gray-500">Due</dt><dd>{new Date(detailTask.due_date).toLocaleDateString()}</dd></div>}
-                {detailTask.recurrence && <div><dt className="text-gray-500">Recurrence</dt><dd>{detailTask.recurrence}</dd></div>}
-              </dl>
-              <button type="button" onClick={() => setDetailId(null)} className="mt-4 text-sm text-gray-400 hover:underline">Close</button>
+            <aside className="w-96 shrink-0 rounded-xl border border-gray-700 bg-surface-900 p-4 space-y-3">
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Title</label>
+                <input
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  className="w-full rounded-lg border border-gray-600 bg-surface-800 px-3 py-2 text-sm text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Description</label>
+                <textarea
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  rows={3}
+                  className="w-full rounded-lg border border-gray-600 bg-surface-800 px-3 py-2 text-sm text-white placeholder-gray-500"
+                  placeholder="Notes…"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Status</label>
+                  <select
+                    value={editStatus}
+                    onChange={(e) => setEditStatus(e.target.value as Task["status"])}
+                    className="w-full rounded border border-gray-600 bg-surface-800 px-2 py-1.5 text-sm text-white"
+                  >
+                    {STATUS_OPTIONS.map((s) => (
+                      <option key={s} value={s}>{s.replace("_", " ")}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Priority</label>
+                  <select
+                    value={editPriority}
+                    onChange={(e) => setEditPriority(e.target.value as Task["priority"])}
+                    className="w-full rounded border border-gray-600 bg-surface-800 px-2 py-1.5 text-sm text-white"
+                  >
+                    {PRIORITY_ORDER.map((p) => (
+                      <option key={p} value={p}>{p}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Due date</label>
+                <input
+                  type="date"
+                  value={editDueDate}
+                  onChange={(e) => setEditDueDate(e.target.value)}
+                  className="w-full rounded border border-gray-600 bg-surface-800 px-2 py-1.5 text-sm text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Entity</label>
+                <select
+                  value={editEntityId}
+                  onChange={(e) => setEditEntityId(e.target.value)}
+                  className="w-full rounded border border-gray-600 bg-surface-800 px-2 py-1.5 text-sm text-white"
+                >
+                  <option value="">None</option>
+                  {entities.map((e) => (
+                    <option key={e.id} value={e.id}>{e.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={handleSaveDetail}
+                  disabled={saving}
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-50"
+                >
+                  {saving ? "Saving…" : "Save"}
+                </button>
+                <button type="button" onClick={() => setDetailId(null)} className="text-sm text-gray-400 hover:underline">
+                  Close
+                </button>
+              </div>
             </aside>
           )}
         </div>

@@ -1,0 +1,51 @@
+-- Add GRX entity (from Todoist export)
+insert into public.entities (name, slug, color, sort_order) values
+  ('GRX', 'grx', '#ef4444', 0)
+on conflict (slug) do update set name = excluded.name, color = excluded.color, sort_order = excluded.sort_order;
+
+-- Seed tasks from Task List (by section). entity_id resolved by slug.
+-- Priority: 4 -> high, 2 -> normal. due_date set where PDF had "in N days".
+insert into public.tasks (title, description, entity_id, status, priority, due_date) values
+  ('Org Chart for Store Staff', null, (select id from public.entities where slug = 'grx'), 'not_started', 'high', null),
+  ('Final Reviews Doc: Raven, Susy, Kamiya, Porshae', null, (select id from public.entities where slug = 'grx'), 'not_started', 'high', null),
+  ('Follow up with Adolfo', null, (select id from public.entities where slug = 'grx'), 'not_started', 'high', null),
+  ('Confirm Completion of Merch order', null, (select id from public.entities where slug = 'grx'), 'not_started', 'normal', null),
+  ('Confirm if he can assist in providing another contact to service the DTG Machine', null, (select id from public.entities where slug = 'grx'), 'not_started', 'normal', null),
+  ('Set a date for his 6 hour master class to internal', null, (select id from public.entities where slug = 'grx'), 'not_started', 'normal', null),
+  ('Follow up w/ Sakara an Daiel to confirm meet up', null, (select id from public.entities where slug = 'grx'), 'not_started', 'high', current_date + 2),
+  ('Confirm time with Angela', null, (select id from public.entities where slug = 'grx'), 'not_started', 'normal', null),
+  ('Confirm time with Raven', null, (select id from public.entities where slug = 'grx'), 'not_started', 'normal', null),
+  ('Sign Us Up for HOF', null, (select id from public.entities where slug = 'grx'), 'not_started', 'high', null),
+  ('Daniel To drop off the Flower For GRX', null, (select id from public.entities where slug = 'grx'), 'not_started', 'high', current_date + 3),
+  ('Payments', null, (select id from public.entities where slug = 'grx'), 'not_started', 'high', null),
+  ('Yas for Puff and Paint', null, (select id from public.entities where slug = 'grx'), 'not_started', 'normal', null),
+  ('Update the payment terminal for Squaresapce', null, (select id from public.entities where slug = 'grx'), 'not_started', 'normal', null),
+  ('Follow up with Treez in regards to Payment Terminal', null, (select id from public.entities where slug = 'grx'), 'not_started', 'high', null),
+  ('Update inventory to reflect the last batch of packaging we took for Daniel / Sakara', 'Gave them the package on 2/26/26', (select id from public.entities where slug = 'grx'), 'not_started', 'high', null),
+  ('Organize all of my tech packs in my drive', null, (select id from public.entities where slug = 'grx'), 'not_started', 'high', null),
+  ('Pending Payments', null, (select id from public.entities where slug = 'ldu'), 'not_started', 'high', null),
+  ('The Plumber', null, (select id from public.entities where slug = 'ldu'), 'not_started', 'normal', null),
+  ('Julio', 'For hanging up the painting', (select id from public.entities where slug = 'ldu'), 'not_started', 'normal', null),
+  ('Order Table for Computer room', null, (select id from public.entities where slug = 'ldu'), 'not_started', 'high', null),
+  ('Set meeting for with Coach Sherri for EOW', null, (select id from public.entities where slug = 'ldu'), 'not_started', 'high', null),
+  ('Create a social contract for the sessions with Coach Sherri', '15 Girl session, Classroom Set up', (select id from public.entities where slug = 'ldu'), 'not_started', 'high', null),
+  ('Create a schematic document for folks to send us their desired layouts for the space', null, (select id from public.entities where slug = 'ldu'), 'not_started', 'high', null),
+  ('Follow up with Sarah to confirm the Update on LDG', null, (select id from public.entities where slug = 'ldg'), 'not_started', 'high', null),
+  ('Add don to the schedule for this week', null, (select id from public.entities where slug = 'ldg'), 'not_started', 'high', current_date + 3),
+  ('Create Bank Account', null, (select id from public.entities where slug = 'sldg'), 'not_started', 'high', null),
+  ('Need to File Taxes with Zipperstein', null, (select id from public.entities where slug = 'sldg'), 'not_started', 'high', null),
+  ('Check on the bank for Shine Theory', null, (select id from public.entities where slug = 'sldg'), 'not_started', 'high', null),
+  ('Create the email draft to follow up with all speakers / operators for LA County', null, (select id from public.entities where slug = 'lacounty'), 'not_started', 'high', null),
+  ('LA County invoice for Jan and Feb', null, (select id from public.entities where slug = 'lacounty'), 'not_started', 'high', current_date + 335),
+  ('Follow up w/ Jasmine from Mid-city Mercado to confirm their involvement in the digital campaign portion of the County outreach', null, (select id from public.entities where slug = 'lacounty'), 'not_started', 'high', null),
+  ('Waiting For Follow up on New Proposal for SD1, 4, and 5', null, (select id from public.entities where slug = 'lacounty'), 'not_started', 'normal', null),
+  ('Nai-Muh needs', null, (select id from public.entities where slug = 'lacounty'), 'not_started', 'high', null),
+  ('Headshots', null, (select id from public.entities where slug = 'lacounty'), 'not_started', 'normal', null),
+  ('All of the Bio Descriptions', null, (select id from public.entities where slug = 'lacounty'), 'not_started', 'normal', null),
+  ('Legal', null, (select id from public.entities where slug = 'bigkika'), 'not_started', 'high', null),
+  ('Confirm The new Invoice with Ani', null, (select id from public.entities where slug = 'bigkika'), 'not_started', 'normal', null),
+  ('Confirm POA Siganature for the account', null, (select id from public.entities where slug = 'bigkika'), 'not_started', 'normal', null),
+  ('Need to confirm who will be reviewing the 2 GRX Cases', null, (select id from public.entities where slug = 'bigkika'), 'not_started', 'normal', null),
+  ('Kaylahs Basketball', null, (select id from public.entities where slug = 'bigkika'), 'not_started', 'high', null),
+  ('Need to create the Basket for Dunraiser', null, (select id from public.entities where slug = 'bigkika'), 'not_started', 'normal', null),
+  ('Finalize CWDB Report', null, (select id from public.entities where slug = 'bigkika'), 'not_started', 'high', null);

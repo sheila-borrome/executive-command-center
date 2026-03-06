@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { authMiddleware } from "./middleware/auth.js";
+import { optionalAuth } from "./middleware/optionalAuth.js";
 import tasksRouter from "./_routes/tasks.js";
 import entitiesRouter from "./_routes/entities.js";
 import dailyTop3Router from "./_routes/daily-top-3.js";
@@ -29,14 +30,15 @@ app.use((req, res, next) => {
 });
 
 app.get("/health", (_, res) => res.json({ ok: true }));
-app.use("/tasks", authMiddleware, tasksRouter);
-app.use("/entities", authMiddleware, entitiesRouter);
+
+app.use("/tasks", optionalAuth, tasksRouter);
+app.use("/entities", optionalAuth, entitiesRouter);
+app.use("/team-members", optionalAuth, teamMembersRouter);
 app.use("/daily-top-3", authMiddleware, dailyTop3Router);
 app.use("/brain-dump", authMiddleware, brainDumpRouter);
 app.use("/projects", authMiddleware, projectsRouter);
 app.use("/meetings", authMiddleware, meetingsRouter);
 app.use("/outreach", authMiddleware, outreachRouter);
-app.use("/team-members", authMiddleware, teamMembersRouter);
 app.use("/search", authMiddleware, searchRouter);
 app.use("/notifications", authMiddleware, notificationsRouter);
 app.use("/calendar", authMiddleware, calendarRouter);

@@ -17,6 +17,7 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
+  if (!req.user) return res.status(401).json({ error: "Sign in to create tasks" });
   try {
     const body = { ...req.body, created_by: req.user?.id };
     const { data, error } = await req.supabase.from("tasks").insert(body).select().single();
@@ -43,6 +44,7 @@ router.get("/:id", async (req, res) => {
 });
 
 router.patch("/:id", async (req, res) => {
+  if (!req.user) return res.status(401).json({ error: "Sign in to update tasks" });
   try {
     const { data, error } = await req.supabase
       .from("tasks")
@@ -76,6 +78,7 @@ router.patch("/bulk", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
+  if (!req.user) return res.status(401).json({ error: "Sign in to delete tasks" });
   try {
     const { error } = await req.supabase.from("tasks").delete().eq("id", req.params.id);
     if (error) throw error;

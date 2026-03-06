@@ -16,6 +16,10 @@ git push -u origin main
 If it asks for credentials, use your GitHub username and a **Personal Access Token** (not your password).  
 Create a token: GitHub → Settings → Developer settings → Personal access tokens → Generate new token (repo scope).
 
+**Vercel "invalid characters" error:** Use a **Project Name** with only letters, digits, and underscores (no hyphens). Example: `ecc` or `executivecommandcenter`. Add env vars with underscores: `VITE_SUPABASE_URL` not `VITE-SUPABASE-URL`.
+
+**If you get 403:** Your Mac is reusing an old, wrong password. Remove it: open **Keychain Access** (Spotlight: “Keychain Access”) → search for **github.com** → delete the “internet password” entry for `github.com`. Then run `git push -u origin main` again; when prompted, paste your **token** as the password.
+
 ---
 
 ## Step 2: Vercel
@@ -25,13 +29,13 @@ Create a token: GitHub → Settings → Developer settings → Personal access t
 3. Leave **Root Directory** blank. **Build** and **Output** are already set by `vercel.json`.
 4. Before deploying, add **Environment Variables** (click “Environment Variables”):
 
-   Copy these from your **dashboard/.env.local** (same values you use locally):
+   Paste the **actual** values from your files (do not type "(from .env.local)" — open the file and copy the real URL/keys):
 
-   | Name | Value | Where to copy from |
-   |------|--------|---------------------|
-   | `VITE_SUPABASE_URL` | Your Supabase URL | dashboard/.env.local |
-   | `VITE_SUPABASE_ANON_KEY` | Your anon key | dashboard/.env.local |
-   | `VITE_API_BASE` | `/api` | type exactly: `/api` |
+   | Name | Where to get the value |
+   |------|------------------------|
+   | `VITE_SUPABASE_URL` | Copy from dashboard/.env.local (the URL line) |
+   | `VITE_SUPABASE_ANON_KEY` | Copy from dashboard/.env.local (the anon key line) |
+   | `VITE_API_BASE` | Type exactly: `/api` |
 
    Copy these from your **api/.env**:
 

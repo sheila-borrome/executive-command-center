@@ -13,6 +13,7 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
+  if (!req.user) return res.status(401).json({ error: "Sign in to add team members" });
   try {
     const { data, error } = await req.supabase.from("team_members").insert(req.body).select().single();
     if (error) throw error;
@@ -48,6 +49,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
+  if (!req.user) return res.status(401).json({ error: "Sign in to delete team members" });
   try {
     const { error } = await req.supabase.from("team_members").delete().eq("id", req.params.id);
     if (error) throw error;
