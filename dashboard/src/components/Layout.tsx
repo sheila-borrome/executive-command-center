@@ -51,7 +51,17 @@ export function Layout() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <h1 className="text-lg font-semibold tracking-tight" style={{ background: "linear-gradient(90deg, #f97316, #ec4899)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Executive Command Center</h1>
+          <h1
+            className="whitespace-nowrap text-2xl uppercase tracking-wide"
+            style={{
+              fontFamily: "'Lilita One', system-ui, sans-serif",
+              background: "linear-gradient(90deg, #f97316, #ec4899, #facc15)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            Executive Command Center
+          </h1>
           <DateDisplay />
         </div>
         <div className="flex items-center gap-2">

@@ -32,7 +32,10 @@ export function Login() {
         {/* Gradient accent bar */}
         <div className="mb-6 h-1 w-full rounded-full" style={{ background: "linear-gradient(90deg, #f97316, #ec4899, #facc15)" }} />
         <div className="rounded-xl border border-gray-700 bg-surface-900 p-6 shadow-2xl" style={{ borderTopColor: "rgba(249,115,22,0.3)" }}>
-          <h2 className="mb-1 text-xl font-bold" style={{ background: "linear-gradient(90deg, #f97316, #ec4899)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+          <h2
+            className="mb-1 text-2xl uppercase tracking-wide"
+            style={{ fontFamily: "'Lilita One', system-ui, sans-serif", background: "linear-gradient(90deg, #f97316, #ec4899, #facc15)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+          >
             Executive Command Center
           </h2>
           <p className="mb-6 text-sm text-gray-500">{isSignUp ? "Create your account" : "Sign in to your account"}</p>
