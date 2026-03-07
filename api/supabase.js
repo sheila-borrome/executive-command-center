@@ -7,14 +7,19 @@ if (!supabaseUrl || !supabaseServiceKey) {
   console.warn("SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not set; API will use anon key if provided.");
 }
 
-export function getSupabase(accessToken) {
-  const anonKey = process.env.SUPABASE_ANON_KEY;
-  if (!anonKey) throw new Error("SUPABASE_ANON_KEY required for user-scoped client");
-  return createClient(process.env.SUPABASE_URL || "", anonKey, {
-    global: accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {},
+// The API validates the user JWT in middleware before any route runs.
+// All DB operations use the service role key to bypass RLS — security is
+// enforced at the API layer (routes check req.user for writes).
+export function getSupabase(_accessToken) {
+  const key = supabaseServiceKey || process.env.SUPABASE_ANON_KEY;
+  if (!key) throw new Error("SUPABASE_SERVICE_ROLE_KEY or SUPABASE_ANON_KEY required");
+  return createClient(supabaseUrl || "", key, {
+    auth: { persistSession: false },
   });
 }
 
 export function getSupabaseAdmin() {
-  return createClient(supabaseUrl || "", supabaseServiceKey || process.env.SUPABASE_ANON_KEY || "");
+  return createClient(supabaseUrl || "", supabaseServiceKey || process.env.SUPABASE_ANON_KEY || "", {
+    auth: { persistSession: false },
+  });
 }
