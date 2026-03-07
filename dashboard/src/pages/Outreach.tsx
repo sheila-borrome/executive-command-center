@@ -15,12 +15,16 @@ export function Outreach() {
   const [list, setList] = useState<OutreachType[]>([]);
   const [entities, setEntities] = useState<Entity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
   const [showQuickLog, setShowQuickLog] = useState(false);
   const [quickForm, setQuickForm] = useState({ contact_name: "", organization: "", entity_id: "", method: "email" as const, notes: "" });
 
   const load = async () => {
     try {
       setLoading(true);
+      setLoadError(null);
       const [oRes, eRes] = await Promise.all([
         apiGet<{ outreach: OutreachType[] }>("/outreach"),
         apiGet<{ entities: Entity[] }>("/entities"),
@@ -28,7 +32,7 @@ export function Outreach() {
       setList(oRes.outreach);
       setEntities(eRes.entities);
     } catch (e) {
-      console.error(e);
+      setLoadError(e instanceof Error ? e.message : "Failed to load outreach");
     } finally {
       setLoading(false);
     }
@@ -40,7 +44,9 @@ export function Outreach() {
 
   const handleQuickLog = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!quickForm.contact_name.trim()) return;
+    if (!quickForm.contact_name.trim() || saving) return;
+    setSaving(true);
+    setSaveError(null);
     try {
       await apiPost("/outreach", {
         contact_name: quickForm.contact_name.trim(),
@@ -54,7 +60,9 @@ export function Outreach() {
       setShowQuickLog(false);
       load();
     } catch (err) {
-      console.error(err);
+      setSaveError(err instanceof Error ? err.message : "Failed to save outreach record");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -119,15 +127,22 @@ export function Outreach() {
             rows={2}
             className="mt-3 w-full rounded border border-gray-600 bg-surface-800 px-3 py-2 text-sm text-white"
           />
+          {saveError && (
+            <div className="mt-2 rounded border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">{saveError}</div>
+          )}
           <div className="mt-3 flex gap-2">
-            <button type="submit" className="rounded bg-orange-500 px-3 py-1.5 text-sm text-white">Save</button>
-            <button type="button" onClick={() => setShowQuickLog(false)} className="rounded bg-surface-700 px-3 py-1.5 text-sm text-gray-300">Cancel</button>
+            <button type="submit" disabled={saving} className="rounded px-3 py-1.5 text-sm text-white disabled:opacity-50" style={{ background: "linear-gradient(90deg,#f97316,#ec4899)" }}>
+              {saving ? "Saving…" : "Save"}
+            </button>
+            <button type="button" onClick={() => { setShowQuickLog(false); setSaveError(null); }} className="rounded bg-surface-700 px-3 py-1.5 text-sm text-gray-300">Cancel</button>
           </div>
         </form>
       )}
 
       {loading ? (
         <p className="text-gray-400">Loading…</p>
+      ) : loadError ? (
+        <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-300">{loadError}</div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
