@@ -108,20 +108,20 @@ export function CommandCenter() {
     <div className="p-4 md:p-6 space-y-6">
       {/* Daily Briefing */}
       {briefing && (
-        <section className="rounded-xl border border-gray-700 bg-surface-900 p-4">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-400">Daily Briefing</h2>
+        <section className="rounded-xl border border-gray-700 bg-surface-900 p-4 card-accent-orange">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-orange-400">Daily Briefing</h2>
           <div className="grid gap-4 sm:grid-cols-3">
             <div>
               <p className="text-xs text-gray-500">Today&apos;s tasks</p>
-              <p className="text-lg font-medium text-white">{briefing.tasks_today.length}</p>
+              <p className="text-2xl font-bold text-yellow-400">{briefing.tasks_today.length}</p>
             </div>
             <div>
               <p className="text-xs text-gray-500">Meetings today</p>
-              <p className="text-lg font-medium text-white">{briefing.meetings_today.length}</p>
+              <p className="text-2xl font-bold text-orange-400">{briefing.meetings_today.length}</p>
             </div>
             <div>
               <p className="text-xs text-gray-500">Urgent items</p>
-              <p className="text-lg font-medium text-white">{briefing.urgent.length}</p>
+              <p className="text-2xl font-bold text-pink-500">{briefing.urgent.length}</p>
             </div>
           </div>
         </section>
@@ -130,8 +130,8 @@ export function CommandCenter() {
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
           {/* Top 3 Must Move Today */}
-          <section className="rounded-xl border border-gray-700 bg-surface-900 p-4">
-            <h3 className="mb-3 text-sm font-semibold text-white">Top 3 Must Move Today</h3>
+          <section className="rounded-xl border border-gray-700 bg-surface-900 p-4 card-accent-yellow">
+            <h3 className="mb-3 text-sm font-semibold text-yellow-400">Top 3 Must Move Today</h3>
             <Top3Picker
               current={top3Tasks}
               allTasks={tasks.filter((t) => t.status !== "done" && t.status !== "cancelled")}
@@ -141,8 +141,8 @@ export function CommandCenter() {
           </section>
 
           {/* Urgent / Time Sensitive */}
-          <section className="rounded-xl border border-gray-700 bg-surface-900 p-4">
-            <h3 className="mb-3 text-sm font-semibold text-white">Urgent / Time Sensitive</h3>
+          <section className="rounded-xl border border-pink-500/40 bg-surface-900 p-4 card-accent-pink" style={{ background: "linear-gradient(135deg, #0d0d0d 0%, #1a0a10 100%)" }}>
+            <h3 className="mb-3 text-sm font-semibold text-pink-400">Urgent / Time Sensitive</h3>
             {briefing?.urgent?.length ? (
               <ul className="space-y-2">
                 {briefing.urgent.map((t) => (
@@ -163,8 +163,8 @@ export function CommandCenter() {
           </section>
 
           {/* This Week Snapshot */}
-          <section className="rounded-xl border border-gray-700 bg-surface-900 p-4">
-            <h3 className="mb-3 text-sm font-semibold text-white">This Week Snapshot</h3>
+          <section className="rounded-xl border border-gray-700 bg-surface-900 p-4 card-accent-orange">
+            <h3 className="mb-3 text-sm font-semibold text-orange-400">This Week Snapshot</h3>
             {Object.keys(byEntity).length ? (
               <div className="space-y-3">
                 {Object.entries(byEntity).map(([eid, list]) => {
@@ -192,8 +192,8 @@ export function CommandCenter() {
           </section>
 
           {/* Delegation Overview */}
-          <section className="rounded-xl border border-gray-700 bg-surface-900 p-4">
-            <h3 className="mb-3 text-sm font-semibold text-white">Delegation Overview</h3>
+          <section className="rounded-xl border border-gray-700 bg-surface-900 p-4 card-accent-pink">
+            <h3 className="mb-3 text-sm font-semibold text-pink-400">Delegation Overview</h3>
             <div className="grid gap-3 sm:grid-cols-3">
               {(["not_started", "in_progress", "done"] as const).map((status) => (
                 <div key={status} className="rounded-lg bg-surface-800 p-2">
@@ -221,14 +221,14 @@ export function CommandCenter() {
           </section>
 
           {/* Brain Dump */}
-          <section className="rounded-xl border border-gray-700 bg-surface-900 p-4">
+          <section className="rounded-xl border border-gray-700 bg-surface-900 p-4 card-accent-yellow">
             <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-white">Brain Dump</h3>
+              <h3 className="text-sm font-semibold text-yellow-400">Brain Dump</h3>
               <button
                 type="button"
                 onClick={saveBrainDump}
                 disabled={brainDumpSaving}
-                className="text-xs text-blue-400 hover:underline disabled:opacity-50"
+                className="text-xs text-orange-400 hover:underline disabled:opacity-50"
               >
                 {brainDumpSaving ? "Saving…" : "Save"}
               </button>
@@ -245,9 +245,9 @@ export function CommandCenter() {
         </div>
 
         {/* Upcoming events sidebar */}
-        <aside className="rounded-xl border border-gray-700 bg-surface-900 p-4">
-          <h3 className="mb-3 text-sm font-semibold text-white">Upcoming</h3>
-          <Link to="/calendar" className="mb-2 block text-xs text-blue-400 hover:underline">
+        <aside className="rounded-xl border border-gray-700 bg-surface-900 p-4 card-accent-orange">
+          <h3 className="mb-3 text-sm font-semibold text-orange-400">Upcoming</h3>
+          <Link to="/calendar" className="mb-2 block text-xs text-orange-400 hover:underline">
             View calendar →
           </Link>
           {briefing?.meetings_today?.length ? (

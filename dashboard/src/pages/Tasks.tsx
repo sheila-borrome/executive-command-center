@@ -146,7 +146,7 @@ export function Tasks() {
             placeholder="Quick-add task…"
             className="flex-1 rounded-lg border border-gray-600 bg-surface-900 px-3 py-2 text-sm text-white placeholder-gray-500"
           />
-          <button type="submit" disabled={saving} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-50">
+          <button type="submit" disabled={saving} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-500 disabled:opacity-50">
             Add
           </button>
         </form>
@@ -216,7 +216,7 @@ export function Tasks() {
               <li
                 key={t.id}
                 className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${
-                  detailId === t.id ? "border-blue-500 bg-blue-500/10" : "border-gray-700 bg-surface-900"
+                  detailId === t.id ? "border-orange-500 bg-orange-500/10" : "border-gray-700 bg-surface-900"
                 }`}
               >
                 <input
@@ -317,7 +317,7 @@ export function Tasks() {
                   type="button"
                   onClick={handleSaveDetail}
                   disabled={saving}
-                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-50"
+                  className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-500 disabled:opacity-50"
                 >
                   {saving ? "Saving…" : "Save"}
                 </button>

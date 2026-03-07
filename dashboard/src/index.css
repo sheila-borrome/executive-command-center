@@ -9,9 +9,35 @@
   }
 }
 
-/* Entity tag colors - use in components via style or class */
-.entity-ldu { --entity-color: #f59e0b; }
-.entity-ldg { --entity-color: #10b981; }
-.entity-sldg { --entity-color: #3b82f6; }
+/* Warm top-of-page accent bar */
+body::before {
+  content: "";
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #f97316 0%, #ec4899 50%, #facc15 100%);
+  z-index: 9999;
+}
+
+/* Colored section card — left border accent */
+@layer components {
+  .card-accent-orange  { @apply border-l-2 border-l-orange-500; }
+  .card-accent-pink    { @apply border-l-2 border-l-pink-500; }
+  .card-accent-yellow  { @apply border-l-2 border-l-yellow-400; }
+  .card-accent-red     { @apply border-l-2 border-l-red-500; }
+
+  /* Warm progress bar */
+  .progress-warm {
+    background: linear-gradient(90deg, #f97316, #ec4899);
+  }
+}
+
+/* Entity tag colors */
+.entity-ldu     { --entity-color: #f59e0b; }
+.entity-ldg     { --entity-color: #10b981; }
+.entity-sldg    { --entity-color: #3b82f6; }
 .entity-lacounty { --entity-color: #8b5cf6; }
-.entity-bigkika { --entity-color: #ec4899; }
+.entity-bigkika  { --entity-color: #ec4899; }

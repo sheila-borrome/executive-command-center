@@ -73,7 +73,7 @@ export function Team() {
         <button
           type="button"
           onClick={() => setShowAdd(true)}
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500"
+          className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-500"
         >
           Add member
         </button>
@@ -111,7 +111,7 @@ export function Team() {
             className="mt-3 w-full rounded border border-gray-600 bg-surface-800 px-3 py-2 text-sm text-white"
           />
           <div className="mt-3 flex gap-2">
-            <button type="submit" className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white">Save</button>
+            <button type="submit" className="rounded bg-orange-500 px-3 py-1.5 text-sm text-white">Save</button>
             <button type="button" onClick={() => setShowAdd(false)} className="rounded bg-surface-700 px-3 py-1.5 text-sm text-gray-300">Cancel</button>
           </div>
         </form>
@@ -126,7 +126,7 @@ export function Team() {
               <li
                 key={m.id}
                 onClick={() => setSelectedId(m.id)}
-                className={`cursor-pointer rounded-lg border p-3 ${selectedId === m.id ? "border-blue-500 bg-blue-500/10" : "border-gray-700 bg-surface-900 hover:border-gray-600"}`}
+                className={`cursor-pointer rounded-lg border p-3 ${selectedId === m.id ? "border-orange-500 bg-orange-500/10" : "border-gray-700 bg-surface-900 hover:border-gray-600"}`}
               >
                 <p className="font-medium text-white">{m.name}</p>
                 {m.email && <p className="text-xs text-gray-500">{m.email}</p>}

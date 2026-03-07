@@ -30,11 +30,11 @@ export function SearchBar({ onSearch, placeholder = "Search tasks, projects, mee
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-l-lg border border-gray-600 bg-surface-900 px-3 py-2 text-sm text-gray-100 placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        className="w-full rounded-l-lg border border-gray-600 bg-surface-900 px-3 py-2 text-sm text-gray-100 placeholder-gray-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
       />
       <button
         type="submit"
-        className="rounded-r-lg border border-l-0 border-gray-600 bg-surface-700 px-3 py-2 text-sm font-medium text-gray-300 hover:bg-surface-600"
+        className="rounded-r-lg border border-l-0 border-gray-600 bg-surface-700 px-3 py-2 text-sm font-medium text-gray-300 hover:bg-orange-500/20 hover:text-orange-300 hover:border-orange-500/40 transition-colors"
       >
         Search
       </button>

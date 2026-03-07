@@ -89,7 +89,7 @@ export function Calendar() {
               key={v}
               type="button"
               onClick={() => setView(v)}
-              className={`rounded px-3 py-1.5 text-sm capitalize ${view === v ? "bg-blue-600 text-white" : "bg-surface-700 text-gray-400"}`}
+              className={`rounded px-3 py-1.5 text-sm capitalize ${view === v ? "bg-orange-500 text-white" : "bg-surface-700 text-gray-400"}`}
             >
               {v}
             </button>

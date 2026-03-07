@@ -82,7 +82,7 @@ export function Projects() {
         <button
           type="button"
           onClick={() => setShowCreate(true)}
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500"
+          className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-500"
         >
           New project
         </button>
@@ -119,7 +119,7 @@ export function Projects() {
               <option value="">Entity</option>
               {entities.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
             </select>
-            <button type="submit" className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white">Add</button>
+            <button type="submit" className="rounded bg-orange-500 px-3 py-1.5 text-sm text-white">Add</button>
             <button type="button" onClick={() => setShowCreate(false)} className="rounded bg-surface-700 px-3 py-1.5 text-sm text-gray-300">Cancel</button>
           </form>
         )}
@@ -127,14 +127,14 @@ export function Projects() {
           <button
             type="button"
             onClick={() => setViewMode("list")}
-            className={`rounded px-3 py-1.5 text-sm ${viewMode === "list" ? "bg-blue-600 text-white" : "bg-surface-700 text-gray-400"}`}
+            className={`rounded px-3 py-1.5 text-sm ${viewMode === "list" ? "bg-orange-500 text-white" : "bg-surface-700 text-gray-400"}`}
           >
             List
           </button>
           <button
             type="button"
             onClick={() => setViewMode("kanban")}
-            className={`rounded px-3 py-1.5 text-sm ${viewMode === "kanban" ? "bg-blue-600 text-white" : "bg-surface-700 text-gray-400"}`}
+            className={`rounded px-3 py-1.5 text-sm ${viewMode === "kanban" ? "bg-orange-500 text-white" : "bg-surface-700 text-gray-400"}`}
           >
             Kanban
           </button>
@@ -153,12 +153,12 @@ export function Projects() {
                   <li
                     key={p.id}
                     onClick={() => setDetailId(p.id)}
-                    className="cursor-pointer rounded-lg border border-gray-600 bg-surface-800 p-2 hover:border-blue-500/50"
+                    className="cursor-pointer rounded-lg border border-gray-600 bg-surface-800 p-2 hover:border-orange-500/50"
                   >
                     <p className="font-medium text-white">{p.title}</p>
                     {p.entity && <EntityTag name={p.entity.name} slug={p.entity.slug} color={p.entity.color} />}
                     <div className="mt-1 h-1.5 w-full rounded bg-surface-700">
-                      <div className="h-full rounded bg-blue-500" style={{ width: `${p.percent_complete}%` }} />
+                      <div className="h-full rounded progress-warm" style={{ width: `${p.percent_complete}%` }} />
                     </div>
                   </li>
                 ))}
@@ -183,7 +183,7 @@ export function Projects() {
               {p.due_date && <span className="text-sm text-gray-500">{new Date(p.due_date).toLocaleDateString()}</span>}
               <div className="w-24">
                 <div className="h-2 w-full rounded bg-surface-700">
-                  <div className="h-full rounded bg-blue-500" style={{ width: `${p.percent_complete}%` }} />
+                  <div className="h-full rounded progress-warm" style={{ width: `${p.percent_complete}%` }} />
                 </div>
                 <span className="text-xs text-gray-500">{p.percent_complete}%</span>
               </div>
