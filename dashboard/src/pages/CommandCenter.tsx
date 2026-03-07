@@ -316,11 +316,6 @@ function Top3Picker({
           </select>
         </div>
       ))}
-      {current.length > 0 && (
-        <ul className="mt-2 space-y-1 text-sm text-gray-400">
-          {selected.map((id, i) => id && taskMap.get(id) && <li key={i}>{taskMap.get(id)!.title}</li>)}
-        </ul>
-      )}
     </div>
   );
 }
