@@ -1,14 +1,62 @@
 import { Router } from "express";
+import { google } from "googleapis";
+import { getSupabaseAdmin } from "../supabase.js";
 
 const router = Router();
 
-// Returns merged events: meetings + tasks with due_date in range. Google events added when OAuth is wired.
+async function fetchGoogleEvents(userId, from, to) {
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) return [];
+  try {
+    const supabase = getSupabaseAdmin();
+    const { data: settings } = await supabase
+      .from("user_settings")
+      .select("google_calendar_connected, google_refresh_token")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (!settings?.google_calendar_connected || !settings?.google_refresh_token) return [];
+
+    const oauth2Client = new google.auth.OAuth2(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET
+    );
+    oauth2Client.setCredentials({ refresh_token: settings.google_refresh_token });
+
+    const calendar = google.calendar({ version: "v3", auth: oauth2Client });
+    const response = await calendar.events.list({
+      calendarId: "primary",
+      timeMin: from,
+      timeMax: to,
+      singleEvents: true,
+      orderBy: "startTime",
+      maxResults: 250,
+    });
+
+    return (response.data.items || [])
+      .filter((ev) => ev.status !== "cancelled")
+      .map((ev) => ({
+        id: `gcal_${ev.id}`,
+        type: "google",
+        title: ev.summary || "(No title)",
+        entity_id: null,
+        start: ev.start?.dateTime || `${ev.start?.date}T00:00:00`,
+        end: ev.end?.dateTime || `${ev.end?.date}T00:00:00`,
+        location: ev.location ?? null,
+        description: ev.description ?? null,
+      }));
+  } catch (err) {
+    console.error("Google Calendar fetch error:", err.message);
+    return [];
+  }
+}
+
 router.get("/events", async (req, res) => {
   try {
     const from = req.query.from || new Date().toISOString();
     const to = req.query.to || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+    const userId = req.user?.id;
 
-    const [meetingsRes, tasksRes] = await Promise.all([
+    const [meetingsRes, tasksRes, googleEvents] = await Promise.all([
       req.supabase
         .from("meetings")
         .select("id, title, entity_id, scheduled_at, location")
@@ -20,7 +68,9 @@ router.get("/events", async (req, res) => {
         .select("id, title, entity_id, due_date")
         .not("due_date", "is", null)
         .gte("due_date", from.slice(0, 10))
-        .lte("due_date", to.slice(0, 10)),
+        .lte("due_date", to.slice(0, 10))
+        .neq("status", "done"),
+      userId ? fetchGoogleEvents(userId, from, to) : Promise.resolve([]),
     ]);
 
     const events = [
@@ -36,11 +86,12 @@ router.get("/events", async (req, res) => {
       ...(tasksRes.data || []).map((t) => ({
         id: t.id,
         type: "task",
-        title: t.title,
+        title: `📌 ${t.title}`,
         entity_id: t.entity_id,
-        start: t.due_date,
-        end: t.due_date,
+        start: `${t.due_date}T00:00:00`,
+        end: `${t.due_date}T00:00:00`,
       })),
+      ...googleEvents,
     ].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 
     res.json({ events });
