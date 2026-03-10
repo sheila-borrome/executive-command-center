@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   if (!req.user) return res.status(401).json({ error: "Sign in to create tasks" });
   try {
-    const body = { ...req.body, created_by: req.user?.id };
+    const body = { ...req.body, created_by: req.user?.id, user_id: req.user?.id };
     const { data, error } = await req.supabase.from("tasks").insert(body).select().single();
     if (error) throw error;
     res.status(201).json(data);
