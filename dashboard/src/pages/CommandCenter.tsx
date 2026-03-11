@@ -271,7 +271,6 @@ export function CommandCenter() {
 }
 
 function Top3Picker({
-  current,
   allTasks,
   onSave,
   top3Ids,
@@ -282,40 +281,115 @@ function Top3Picker({
   top3Ids: (string | null)[];
 }) {
   const [selected, setSelected] = useState<(string | null)[]>([...top3Ids].slice(0, 3));
+  const [openSlot, setOpenSlot] = useState<number | null>(null);
+  const [search, setSearch] = useState("");
+
   useEffect(() => {
     setSelected([...top3Ids].slice(0, 3));
   }, [top3Ids.join(",")]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    if (openSlot === null) return;
+    const handler = () => setOpenSlot(null);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [openSlot]);
 
   const handleSelect = (taskId: string, slot: number) => {
     const next = [...selected];
     const existing = next.indexOf(taskId);
     if (existing >= 0) next[existing] = null;
-    next[slot] = taskId;
+    next[slot] = taskId === "__clear__" ? null : taskId;
     setSelected(next);
     onSave(next[0] ?? null, next[1] ?? null, next[2] ?? null);
+    setOpenSlot(null);
+    setSearch("");
   };
 
   const taskMap = new Map(allTasks.map((t) => [t.id, t]));
+  const filtered = allTasks.filter((t) =>
+    !search || t.title.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="space-y-2">
-      {[0, 1, 2].map((slot) => (
-        <div key={slot} className="flex items-center gap-2">
-          <span className="w-6 text-sm font-medium text-gray-500">{slot + 1}.</span>
-          <select
-            value={selected[slot] ?? ""}
-            onChange={(e) => handleSelect(e.target.value, slot)}
-            className="flex-1 rounded border border-gray-600 bg-surface-800 px-2 py-1.5 text-sm text-white focus:border-blue-500 focus:outline-none"
-          >
-            <option value="">Select task…</option>
-            {allTasks.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.title} {t.due_date ? `(${new Date(t.due_date).toLocaleDateString()})` : ""}
-              </option>
-            ))}
-          </select>
-        </div>
-      ))}
+      {[0, 1, 2].map((slot) => {
+        const task = selected[slot] ? taskMap.get(selected[slot]!) : null;
+        const isOpen = openSlot === slot;
+        return (
+          <div key={slot} className="flex items-start gap-2">
+            <span className="mt-2 w-5 shrink-0 text-sm font-medium text-gray-500">{slot + 1}.</span>
+            {/* Custom dropdown — stays fully inside the section */}
+            <div className="relative flex-1 min-w-0" onMouseDown={(e) => e.stopPropagation()}>
+              <button
+                type="button"
+                onClick={() => { setOpenSlot(isOpen ? null : slot); setSearch(""); }}
+                className={`w-full rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
+                  isOpen
+                    ? "border-orange-500/60 bg-surface-700"
+                    : "border-gray-600 bg-surface-800 hover:border-gray-500"
+                }`}
+              >
+                {task ? (
+                  <span className="font-medium text-white truncate block">{task.title}</span>
+                ) : (
+                  <span className="text-gray-500">Select task…</span>
+                )}
+              </button>
+
+              {isOpen && (
+                <div className="absolute left-0 right-0 top-full z-50 mt-1 rounded-xl border border-gray-600 bg-surface-800 shadow-2xl overflow-hidden">
+                  {/* Search */}
+                  <div className="border-b border-gray-700 p-2">
+                    <input
+                      autoFocus
+                      type="text"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder="Search tasks…"
+                      className="w-full rounded border border-gray-600 bg-surface-900 px-2 py-1.5 text-xs text-white placeholder-gray-500 focus:border-orange-500 focus:outline-none"
+                    />
+                  </div>
+                  {/* Options */}
+                  <ul className="max-h-52 overflow-y-auto">
+                    {selected[slot] && (
+                      <li>
+                        <button
+                          type="button"
+                          onClick={() => handleSelect("__clear__", slot)}
+                          className="w-full px-3 py-2 text-left text-xs text-red-400 hover:bg-surface-700"
+                        >
+                          ✕ Clear slot
+                        </button>
+                      </li>
+                    )}
+                    {filtered.length === 0 && (
+                      <li className="px-3 py-3 text-xs text-gray-500 text-center">No tasks match</li>
+                    )}
+                    {filtered.map((t) => (
+                      <li key={t.id}>
+                        <button
+                          type="button"
+                          onClick={() => handleSelect(t.id, slot)}
+                          className={`w-full px-3 py-2 text-left text-sm transition-colors hover:bg-surface-700 ${
+                            selected[slot] === t.id ? "text-orange-400 bg-orange-500/10" : "text-white"
+                          }`}
+                        >
+                          <span className="block truncate">{t.title}</span>
+                          {t.due_date && (
+                            <span className="text-xs text-gray-500">{new Date(t.due_date).toLocaleDateString()}</span>
+                          )}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
