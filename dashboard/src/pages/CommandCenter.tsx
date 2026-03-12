@@ -108,26 +108,26 @@ export function CommandCenter() {
     <div className="p-4 md:p-6 space-y-6">
       {/* Daily Briefing */}
       {briefing && (
-        <section className="rounded-xl border border-gray-700 bg-surface-900 p-4 card-accent-orange">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-orange-400">Daily Briefing</h2>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div>
-              <p className="text-xs text-gray-500">Today&apos;s tasks</p>
-              <p className="text-2xl font-bold text-yellow-400">{briefing.tasks_today.length}</p>
+        <section className="rounded-xl border border-gray-700 bg-surface-900 p-5 card-accent-orange">
+          <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-orange-400">Daily Briefing</h2>
+          <div className="grid grid-cols-3 divide-x divide-gray-700">
+            <div className="pr-4 text-center">
+              <p className="text-3xl font-black text-yellow-400">{briefing.tasks_today.length}</p>
+              <p className="mt-1 text-xs text-gray-500">Tasks today</p>
             </div>
-            <div>
-              <p className="text-xs text-gray-500">Meetings today</p>
-              <p className="text-2xl font-bold text-orange-400">{briefing.meetings_today.length}</p>
+            <div className="px-4 text-center">
+              <p className="text-3xl font-black text-orange-400">{briefing.meetings_today.length}</p>
+              <p className="mt-1 text-xs text-gray-500">Meetings</p>
             </div>
-            <div>
-              <p className="text-xs text-gray-500">Urgent items</p>
-              <p className="text-2xl font-bold text-pink-500">{briefing.urgent.length}</p>
+            <div className="pl-4 text-center">
+              <p className="text-3xl font-black text-pink-500">{briefing.urgent.length}</p>
+              <p className="mt-1 text-xs text-gray-500">Urgent</p>
             </div>
           </div>
         </section>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3 lg:items-start">
         <div className="lg:col-span-2 space-y-6">
           {/* Top 3 Must Move Today */}
           <section className="rounded-xl border border-gray-700 bg-surface-900 p-4 card-accent-yellow">
@@ -239,31 +239,79 @@ export function CommandCenter() {
               onBlur={saveBrainDump}
               placeholder="Offload everything in your head. Save to process later."
               rows={4}
-              className="w-full rounded-lg border border-gray-600 bg-surface-800 px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-600 bg-surface-800 px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
             />
           </section>
         </div>
 
-        {/* Upcoming events sidebar */}
-        <aside className="rounded-xl border border-gray-700 bg-surface-900 p-4 card-accent-orange">
-          <h3 className="mb-3 text-sm font-semibold text-orange-400">Upcoming</h3>
-          <Link to="/calendar" className="mb-2 block text-xs text-orange-400 hover:underline">
-            View calendar →
-          </Link>
-          {briefing?.meetings_today?.length ? (
-            <ul className="space-y-2">
-              {briefing.meetings_today.slice(0, 5).map((m) => (
-                <li key={m.id} className="text-sm">
-                  <span className="text-gray-400">
-                    {new Date(m.scheduled_at).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}
-                  </span>
-                  <span className="ml-2 text-white">{m.title}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-sm text-gray-500">No upcoming events.</p>
-          )}
+        {/* Upcoming sidebar — sticky so it stays aligned as left column scrolls */}
+        <aside className="space-y-4 lg:sticky lg:top-4">
+          {/* Today's meetings */}
+          <div className="rounded-xl border border-gray-700 bg-surface-900 p-4 card-accent-orange">
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-orange-400">Today</h3>
+              <Link to="/calendar" className="text-xs text-orange-400 hover:underline">View calendar →</Link>
+            </div>
+            {briefing?.meetings_today?.length ? (
+              <ul className="space-y-2">
+                {briefing.meetings_today.map((m) => (
+                  <li key={m.id} className="flex items-start gap-2 rounded-lg bg-surface-800 px-3 py-2">
+                    <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-orange-400" />
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-white">{m.title}</p>
+                      <p className="text-xs text-gray-500">
+                        {new Date(m.scheduled_at).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-gray-500">No meetings today.</p>
+            )}
+          </div>
+
+          {/* Upcoming task deadlines (next 7 days) */}
+          <div className="rounded-xl border border-gray-700 bg-surface-900 p-4 card-accent-yellow">
+            <h3 className="mb-3 text-sm font-semibold text-yellow-400">Deadlines This Week</h3>
+            {thisWeekTasks.length ? (
+              <ul className="space-y-2">
+                {thisWeekTasks.slice(0, 8).map((t) => (
+                  <li key={t.id} className="flex items-start gap-2">
+                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-yellow-400" />
+                    <div className="min-w-0 flex-1">
+                      <Link to="/tasks" className="block truncate text-sm text-gray-300 hover:text-white">
+                        {t.title}
+                      </Link>
+                      <div className="flex items-center gap-1.5">
+                        {t.entity && <EntityTag name={t.entity.name} slug={t.entity.slug} color={t.entity.color} />}
+                        <span className="text-xs text-gray-600">{t.due_date ? new Date(t.due_date).toLocaleDateString(undefined, { month: "short", day: "numeric" }) : ""}</span>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+                {thisWeekTasks.length > 8 && (
+                  <li className="text-xs text-gray-500 pl-3">+{thisWeekTasks.length - 8} more</li>
+                )}
+              </ul>
+            ) : (
+              <p className="text-sm text-gray-500">No deadlines this week.</p>
+            )}
+          </div>
+
+          {/* Urgent quick-view */}
+          {briefing?.urgent?.length ? (
+            <div className="rounded-xl border border-pink-500/30 bg-surface-900 p-4 card-accent-pink">
+              <h3 className="mb-3 text-sm font-semibold text-pink-400">🔥 On Fire</h3>
+              <ul className="space-y-1.5">
+                {briefing.urgent.slice(0, 4).map((t) => (
+                  <li key={t.id} className="truncate text-sm text-gray-300">
+                    <Link to="/tasks" className="hover:text-pink-300">{t.title}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </aside>
       </div>
     </div>
