@@ -1,6 +1,6 @@
 export type TaskStatus = "not_started" | "in_progress" | "done" | "cancelled";
 export type TaskPriority = "critical" | "high" | "normal" | "low";
-export type ProjectStatus = "not_started" | "in_progress" | "done" | "on_hold";
+export type ProjectStatus = "Not Started" | "In Progress" | "Done" | "On Hold";
 export type OutreachStatus = "contacted" | "awaiting_response" | "follow_up_due" | "completed" | "stalled";
 export type OutreachMethod = "email" | "call" | "meeting";
 export type DelegationStatus = "not_started" | "in_progress" | "done";

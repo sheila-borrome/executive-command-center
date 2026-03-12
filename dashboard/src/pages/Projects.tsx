@@ -4,7 +4,7 @@ import { apiGet, apiPost, apiPatch } from "../lib/api";
 import type { Project, Entity, TeamMember } from "../types";
 
 type ViewMode = "list" | "kanban";
-const STATUSES: Project["status"][] = ["not_started", "in_progress", "done", "on_hold"];
+const STATUSES: Project["status"][] = ["Not Started", "In Progress", "Done", "On Hold"];
 
 export function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -16,7 +16,7 @@ export function Projects() {
   const [detail, setDetail] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
-  const [createForm, setCreateForm] = useState({ title: "", description: "", entity_id: "", status: "not_started" as Project["status"], due_date: "" });
+  const [createForm, setCreateForm] = useState({ title: "", description: "", entity_id: "", status: "Not Started" as Project["status"], due_date: "" });
   const [createError, setCreateError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -72,9 +72,9 @@ export function Projects() {
         status: createForm.status,
         due_date: createForm.due_date || null,
       });
-      setCreateForm({ title: "", description: "", entity_id: "", status: "not_started", due_date: "" });
+      setCreateForm({ title: "", description: "", entity_id: "", status: "Not Started", due_date: "" });
       setShowCreate(false);
-      // Clear status filter so the new project (not_started) is visible
+      // Clear status filter so the new project is visible
       setFilterStatus("");
       load();
     } catch (err) {
@@ -108,7 +108,7 @@ export function Projects() {
           className="rounded border border-gray-600 bg-surface-900 px-2 py-1.5 text-sm text-white"
         >
           <option value="">All statuses</option>
-          {STATUSES.map((s) => <option key={s} value={s}>{s.replace("_", " ")}</option>)}
+          {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
         {showCreate && (
           <form onSubmit={handleCreate} className="flex flex-wrap items-end gap-2 rounded-lg border border-gray-700 bg-surface-900 p-3">
@@ -133,7 +133,7 @@ export function Projects() {
               onChange={(e) => setCreateForm((f) => ({ ...f, status: e.target.value as Project["status"] }))}
               className="rounded border border-gray-600 bg-surface-800 px-2 py-1.5 text-sm text-white"
             >
-              {STATUSES.map((s) => <option key={s} value={s}>{s.replace(/_/g, " ")}</option>)}
+              {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
             <button
               type="submit"
@@ -178,7 +178,7 @@ export function Projects() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {STATUSES.map((status) => (
             <div key={status} className="rounded-xl border border-gray-700 bg-surface-900 p-3">
-              <h3 className="mb-2 text-xs font-semibold uppercase text-gray-500">{status.replace("_", " ")}</h3>
+              <h3 className="mb-2 text-xs font-semibold uppercase text-gray-500">{status}</h3>
               <ul className="space-y-2">
                 {byStatus[status]?.map((p) => (
                   <li
