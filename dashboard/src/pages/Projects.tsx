@@ -17,6 +17,8 @@ export function Projects() {
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [createForm, setCreateForm] = useState({ title: "", description: "", entity_id: "", status: "not_started" as Project["status"], due_date: "" });
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const load = async () => {
     try {
@@ -60,6 +62,8 @@ export function Projects() {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!createForm.title.trim()) return;
+    setCreateError(null);
+    setSubmitting(true);
     try {
       await apiPost("/projects", {
         title: createForm.title.trim(),
@@ -70,9 +74,13 @@ export function Projects() {
       });
       setCreateForm({ title: "", description: "", entity_id: "", status: "not_started", due_date: "" });
       setShowCreate(false);
+      // Clear status filter so the new project (not_started) is visible
+      setFilterStatus("");
       load();
     } catch (err) {
-      console.error(err);
+      setCreateError(err instanceof Error ? err.message : "Failed to create project");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -106,10 +114,11 @@ export function Projects() {
           <form onSubmit={handleCreate} className="flex flex-wrap items-end gap-2 rounded-lg border border-gray-700 bg-surface-900 p-3">
             <input
               required
+              autoFocus
               value={createForm.title}
               onChange={(e) => setCreateForm((f) => ({ ...f, title: e.target.value }))}
               placeholder="Project title"
-              className="rounded border border-gray-600 bg-surface-800 px-2 py-1.5 text-sm text-white"
+              className="rounded border border-gray-600 bg-surface-800 px-2 py-1.5 text-sm text-white focus:border-orange-500 focus:outline-none"
             />
             <select
               value={createForm.entity_id}
@@ -119,8 +128,30 @@ export function Projects() {
               <option value="">Entity</option>
               {entities.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
             </select>
-            <button type="submit" className="rounded bg-orange-500 px-3 py-1.5 text-sm text-white">Add</button>
-            <button type="button" onClick={() => setShowCreate(false)} className="rounded bg-surface-700 px-3 py-1.5 text-sm text-gray-300">Cancel</button>
+            <select
+              value={createForm.status}
+              onChange={(e) => setCreateForm((f) => ({ ...f, status: e.target.value as Project["status"] }))}
+              className="rounded border border-gray-600 bg-surface-800 px-2 py-1.5 text-sm text-white"
+            >
+              {STATUSES.map((s) => <option key={s} value={s}>{s.replace(/_/g, " ")}</option>)}
+            </select>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="rounded bg-orange-500 px-3 py-1.5 text-sm text-white hover:bg-orange-600 disabled:opacity-50"
+            >
+              {submitting ? "Adding…" : "Add"}
+            </button>
+            <button
+              type="button"
+              onClick={() => { setShowCreate(false); setCreateError(null); }}
+              className="rounded bg-surface-700 px-3 py-1.5 text-sm text-gray-300 hover:bg-surface-600"
+            >
+              Cancel
+            </button>
+            {createError && (
+              <p className="w-full text-xs text-red-400">{createError}</p>
+            )}
           </form>
         )}
         <div className="flex gap-1">
